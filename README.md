@@ -1,6 +1,28 @@
-# NVIDIA device plugin for Kubernetes
+# NVIDIA device plugin for Kubernetes with GPU Device Filtering
 
 [![End-to-end Tests](https://github.com/NVIDIA/k8s-device-plugin/actions/workflows/e2e.yaml/badge.svg)](https://github.com/NVIDIA/k8s-device-plugin/actions/workflows/e2e.yaml) [![Go Report Card](https://goreportcard.com/badge/github.com/NVIDIA/k8s-device-plugin)](https://goreportcard.com/report/github.com/NVIDIA/k8s-device-plugin) [![Latest Release](https://img.shields.io/github/v/release/NVIDIA/k8s-device-plugin)](https://github.com/NVIDIA/k8s-device-plugin/releases/latest)
+
+## Improvements
+
+This fork adds a **GPU device filtering capability** to the Zenlix K8S Device Plugin, enabling fine-grained control over which GPUs are exposed to the Kubernetes cluster on a per-node basis.
+
+### Key Differentiators from Official NVIDIA Plugin:
+
+1. **Selective Device Exposure**: Introduces three new configuration flags:
+   - `DEVICE_FILTER_ENABLED`: Toggle the filtering feature on/off
+   - `DEVICE_FILTER_SELECT_DEVICES`: Whitelist specific GPUs by index or UUID
+   - `DEVICE_FILTER_EXCLUDE_DEVICES`: Blacklist specific GPUs
+
+2. **Pre-Replication Filtering**: The filter is applied **before** time-slicing or MPS replica creation, meaning only filtered devices are replicated. This provides better resource control compared to post-filtering approaches.
+
+3. **Per-Node Configuration**: Supports different device filters across nodes using Kubernetes node labels, allowing heterogeneous GPU clusters to have customized device exposure per node.
+
+4. **Flexible Input Format**: Accepts mixed device identifiers—both index-based ("0,1,2") and UUID-based ("GPU-XXX,GPU-YYY")—for maximum flexibility.
+
+5. **Conflict Resolution**: When a device appears in both select and exclude lists, exclusion takes precedence, providing predictable behavior.
+
+### Use Case:
+Particularly useful for Kubernetes clusters where not all GPUs on a node should be exposed to workloads, or where different nodes need different GPU subsets allocated to containers.
 
 ## Table of Contents
 
